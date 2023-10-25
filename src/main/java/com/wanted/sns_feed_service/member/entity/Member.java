@@ -1,4 +1,4 @@
-package com.wanted.sns_feed_service.user.entity;
+package com.wanted.sns_feed_service.member.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
