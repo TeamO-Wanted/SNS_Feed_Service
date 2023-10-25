@@ -21,6 +21,7 @@ public class Feed {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  @Column(unique = true)
   private String contentId;
   @Enumerated(EnumType.STRING)
   private Type type;
