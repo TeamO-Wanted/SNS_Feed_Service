@@ -102,7 +102,7 @@ class JwtTests {
 		claims.put("id", 1L);
 		claims.put("username", "admin");
 
-		// 지금으로부터 5시간의 유효기간을 가지는 토큰을 생성
+		// 만료 기간을 현재 시간보다 -1초로 설정 -> 만료 토큰 생성
 		String accessToken = jwtProvider.genToken(claims, -1);
 
 		System.out.println("accessToken : " + accessToken);
