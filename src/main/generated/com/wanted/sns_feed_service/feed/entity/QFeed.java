@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -24,6 +25,8 @@ public class QFeed extends EntityPathBase<Feed> {
     public final StringPath contentId = createString("contentId");
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
+
+    public final ListPath<com.wanted.sns_feed_service.hashTag.entity.HashTag, com.wanted.sns_feed_service.hashTag.entity.QHashTag> hashTags = this.<com.wanted.sns_feed_service.hashTag.entity.HashTag, com.wanted.sns_feed_service.hashTag.entity.QHashTag>createList("hashTags", com.wanted.sns_feed_service.hashTag.entity.HashTag.class, com.wanted.sns_feed_service.hashTag.entity.QHashTag.class, PathInits.DIRECT2);
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
