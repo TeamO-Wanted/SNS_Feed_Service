@@ -63,4 +63,8 @@ public class Feed {
 	public void addTag(HashTag hashTag) {
 		this.hashTags.add(hashTag);
 	}
+
+	public void updateViewCount(int viewCount) {
+		this.viewCount = viewCount;
+	}
 }
