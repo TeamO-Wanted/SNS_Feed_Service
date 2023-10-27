@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.wanted.sns_feed_service.member.entity.Member;
 import com.wanted.sns_feed_service.member.service.MemberService;
 import com.wanted.sns_feed_service.rsData.RsData;
 
@@ -27,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/member", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
-@Tag(name = "MemberController", description = "회원가입, 로그인")
+@Tag(name = "MemberController", description = "회원가입, 로그인처리 컨트롤러")
 public class MemberController {
 	private final MemberService memberService;
 
