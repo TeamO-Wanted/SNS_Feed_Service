@@ -76,6 +76,7 @@ public class NotProd {
 					.contentId("instagram" + i)
 					.type(INSTAGRAM)
 					.content("인스타 테스트 피드" + i)
+					.title("인스타 테스트 타이틀" + i)
 					.build();
 				// 태그 추가
 				instaTmp.addTag(tag1);
@@ -88,6 +89,7 @@ public class NotProd {
 					.contentId("facebook" + i)
 					.type(FACEBOOK)
 					.content("페이스북 테스트 피드" + i)
+					.title("페이스북 테스트 타이틀" + i)
 					.build();
 				// 태그 추가
 				facebookTmp.addTag(tag2);
@@ -100,6 +102,7 @@ public class NotProd {
 					.contentId("twitter" + i)
 					.type(TWITTER)
 					.content("트위터 테스트 피드" + i)
+					.title("트위터 테스트 타이틀" + i)
 					.build();
 				// 태그 추가
 				twitterTmp.addTag(tag3);
@@ -112,6 +115,7 @@ public class NotProd {
 					.contentId("threads" + i)
 					.type(THREADS)
 					.content("쓰레드 테스트 피드" + i)
+					.title("쓰레드 테스트 타이틀" + i)
 					.build();
 				// 태그 추가
 				threadsTmp.addTag(tag4);
