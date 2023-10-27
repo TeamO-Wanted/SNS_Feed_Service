@@ -59,4 +59,8 @@ public class Feed {
 	public void prePersist() {
 		this.updatedAt = null;
 	}
+
+	public void addTag(HashTag hashTag) {
+		this.hashTags.add(hashTag);
+	}
 }
