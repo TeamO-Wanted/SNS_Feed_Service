@@ -64,7 +64,7 @@ public class Feed {
 		this.hashTags.add(hashTag);
 	}
 
-	public void updateViewCount(int viewCount) {
-		this.viewCount = viewCount;
+	public void updateViewCount() {
+		this.viewCount++;
 	}
 }

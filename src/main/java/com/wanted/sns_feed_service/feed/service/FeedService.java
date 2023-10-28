@@ -16,7 +16,7 @@ public class FeedService {
     public Feed findById(long id) {
         Feed feed = feedRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
 
-        feed.updateViewCount(feed.getViewCount() + 1);
+        feed.updateViewCount();
 
         return feed;
     }
