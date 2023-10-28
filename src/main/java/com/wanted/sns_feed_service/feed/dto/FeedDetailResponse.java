@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 public class FeedDetailResponse {
-    private final String content_id;
+    private final String contentId;
     private final String type;
     private final String title;
     private final String content;
@@ -21,7 +21,7 @@ public class FeedDetailResponse {
     private final LocalDateTime createdAt;
 
     public FeedDetailResponse(Feed feed) {
-        this.content_id = feed.getContentId();
+        this.contentId = feed.getContentId();
         this.type = feed.getType().name();
         this.title = feed.getTitle();
         this.content = feed.getContent();
