@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("v1/feed")
-@Tag(name = "MemberController", description = "회원가입, 로그인처리 컨트롤러")
+@Tag(name = "FeedController", description = "피드 컨트롤러")
 public class FeedController {
 
     private final FeedService feedService;
