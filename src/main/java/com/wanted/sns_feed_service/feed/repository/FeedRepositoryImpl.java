@@ -62,15 +62,19 @@ public class FeedRepositoryImpl extends Querydsl4RepositorySupport implements Fe
             return null; // 검색 키워드가 없을 때 필터링하지 않음
         }
 
+        if (searchBy == null) {
+            // searchBy가 null인 경우, 디폴트로 타이틀 + 내용 전체 검색
+            return feed.title.containsIgnoreCase(searchKeyword).or(feed.content.containsIgnoreCase(searchKeyword));
+        }
+
         switch (searchBy) {
             case "title": // 타이틀 검색
                 return feed.title.containsIgnoreCase(searchKeyword);
             case "content": // 내용 검색
                 return feed.content.containsIgnoreCase(searchKeyword);
-            default: // 이외의 경우는 타이틀 + 내용 전체 검색
-                return feed.title.containsIgnoreCase(searchKeyword).or(feed.content.containsIgnoreCase(searchKeyword));
         }
-
+        // 이외의 경우는 타이틀 + 내용 전체 검색
+        return feed.title.containsIgnoreCase(searchKeyword).or(feed.content.containsIgnoreCase(searchKeyword));
     }
 
     /**
