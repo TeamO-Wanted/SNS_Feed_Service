@@ -6,6 +6,8 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
 public class Ut {
 	public static class json {
 		// map을 Json 형태 변환 매서드
@@ -25,6 +27,17 @@ public class Ut {
 			} catch (JsonProcessingException e) {
 				return null;
 			}
+		}
+	}
+
+	public static class encrypt {
+		public static String encryptPW(String password) {
+			return BCrypt.withDefaults().hashToString(12, password.toCharArray());
+		}
+
+		public static BCrypt.Result verifyPW(String plainPassword ,String encryptPassword) {
+			BCrypt.Result result = BCrypt.verifyer().verify(plainPassword.toCharArray(), encryptPassword);
+			return result; // result.verified == true
 		}
 	}
 }
