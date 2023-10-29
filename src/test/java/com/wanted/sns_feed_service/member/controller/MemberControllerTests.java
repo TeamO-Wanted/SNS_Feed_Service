@@ -46,7 +46,7 @@ public class MemberControllerTests {
 		resultActions
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.resultCode").value("S-1"))
-			.andExpect(jsonPath("$.msg").value("회원가입 완료, 로그인 후 이용해주세요!"));
+			.andExpect(jsonPath("$.msg").value("회원가입 완료 최초 로그인 시 이메일 인증 코드를 확인하고 입력해주세요"));
 	}
 
 	@Test
