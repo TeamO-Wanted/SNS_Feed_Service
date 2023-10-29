@@ -1,5 +1,6 @@
 package com.wanted.sns_feed_service.feed;
 
+import com.wanted.sns_feed_service.feed.entity.Feed;
 import com.wanted.sns_feed_service.feed.entity.Type;
 import com.wanted.sns_feed_service.feed.entity.dto.FeedResponseDto;
 import com.wanted.sns_feed_service.feed.repository.FeedRepository;
@@ -23,5 +24,17 @@ public class FeedService {
         // TODO hashtag      미 입력시 본인 계정
 
         return feedRepository.filter(hashtag, type, searchBy, orderBy, orderTarget, searchKeyword, pageable);
+    }
+
+    /**
+     * 피드 상세 조회
+     */
+    @Transactional
+    public Feed findById(long id) {
+        Feed feed = feedRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+
+        feed.updateViewCount();
+
+        return feed;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static com.wanted.sns_feed_service.feed.entity.Type.INSTAGRAM;
@@ -223,5 +224,20 @@ class FeedControllerTest {
                 .andExpect(jsonPath("$.data.totalElements").value(1)) // 총 검색된 데이터 건 수
                 .andExpect(jsonPath("$.data.content[0].title").value("인스타 테스트 타이틀0"))
                 .andDo(print());
+    }
+
+    @DisplayName("findFeed: 게시물 상세 조회에 성공한다.")
+    @Test
+    public void findFeed() throws Exception {
+        // given
+        final String url = "/v1/feed/{id}";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(get(url, 1));
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.contentId").value("instagram0"))
+                .andExpect(jsonPath("$.viewCount").value(1));
     }
 }

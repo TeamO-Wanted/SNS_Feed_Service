@@ -1,7 +1,9 @@
 package com.wanted.sns_feed_service.feed.controller;
 
 import com.wanted.sns_feed_service.feed.FeedService;
+import com.wanted.sns_feed_service.feed.entity.Feed;
 import com.wanted.sns_feed_service.feed.entity.Type;
+import com.wanted.sns_feed_service.response.FeedDetailResponse;
 import com.wanted.sns_feed_service.response.ResResult;
 import com.wanted.sns_feed_service.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -53,5 +52,15 @@ public class FeedController {
                         .build()
 
         );
+    }
+
+    /**
+     * 피드 상세 조회
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<FeedDetailResponse> findFeed(@PathVariable long id) {
+        Feed feed = feedService.findById(id);
+
+        return ResponseEntity.ok().body(new FeedDetailResponse(feed));
     }
 }
