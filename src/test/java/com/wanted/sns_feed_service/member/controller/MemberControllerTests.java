@@ -16,12 +16,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.wanted.sns_feed_service.member.entity.Member;
+import com.wanted.sns_feed_service.member.repository.MemberRepository;
+import static org.assertj.core.api.Assertions.*;
+
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 public class MemberControllerTests {
 	@Autowired
 	private MockMvc mvc;
+
+	@Autowired
+	private MemberRepository memberRepository;
 
 	@Test
 	@DisplayName("POST /member/signup 은 회원가입을 처리한다.")
@@ -34,7 +41,7 @@ public class MemberControllerTests {
 						{
 						    "account": "puar12",
 						    "password": "cjfgus2514",
-						    "email": "aaaaa@naver.com"
+						    "email": "r4560798@naver.com"
 						}
 						""".stripIndent())
 					// JSON 형태로 보내겠다
@@ -47,6 +54,10 @@ public class MemberControllerTests {
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.resultCode").value("S-1"))
 			.andExpect(jsonPath("$.msg").value("회원가입 완료 최초 로그인 시 이메일 인증 코드를 확인하고 입력해주세요"));
+
+		// 인증 코드 값이 들어있는지 확인
+		Member member = memberRepository.findByAccount("puar12").get();
+		assertThat(member.getTempCode()).isNotNull();
 	}
 
 	@Test
