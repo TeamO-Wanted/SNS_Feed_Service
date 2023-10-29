@@ -16,6 +16,7 @@ import com.wanted.sns_feed_service.hashTag.entity.HashTag;
 import com.wanted.sns_feed_service.hashTag.repository.HashTagRepository;
 import com.wanted.sns_feed_service.member.entity.Member;
 import com.wanted.sns_feed_service.member.repository.MemberRepository;
+import com.wanted.sns_feed_service.util.Ut;
 
 @Configuration
 @Profile({"dev", "test"})
@@ -23,8 +24,8 @@ public class NotProd {
 	@Bean
 	CommandLineRunner initData(MemberRepository memberRepository, FeedRepository feedRepository,
 		HashTagRepository hashTagRepository) {
-		// TODO : 암호화 필요
-		String password = "1234";
+
+		String password = Ut.encrypt.encryptPW("1234");
 		return args -> {
 			List<Member> memberList = new ArrayList<>();
 			Member user1 = Member.builder()
