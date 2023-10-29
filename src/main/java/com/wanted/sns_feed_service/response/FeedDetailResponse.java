@@ -1,4 +1,4 @@
-package com.wanted.sns_feed_service.feed.dto;
+package com.wanted.sns_feed_service.response;
 
 import com.wanted.sns_feed_service.feed.entity.Feed;
 import com.wanted.sns_feed_service.hashTag.entity.HashTag;
