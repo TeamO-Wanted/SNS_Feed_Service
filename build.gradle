@@ -48,6 +48,9 @@ dependencies {
 
     // Bcrypt 라이브러리
     implementation group: 'at.favre.lib', name: 'bcrypt', version: '0.10.2'
+
+    // java-mail-sender
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {
