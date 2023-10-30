@@ -30,4 +30,5 @@ public class Member {
 	@Email(message = "올바른 이메일 형식을 입력하세요")
 	private String email;
 	private String accessToken;
+	private Integer tempCode;
 }

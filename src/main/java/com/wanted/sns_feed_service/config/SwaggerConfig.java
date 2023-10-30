@@ -14,13 +14,4 @@ import io.swagger.v3.oas.annotations.info.Info;
 )
 @Configuration
 public class SwaggerConfig {
-    // @Bean
-    // public GroupedOpenApi snsOpenApi(){
-    //     String[] paths = {"/v1/**"};
-    //
-    //     return GroupedOpenApi.builder()
-    //             .group("sns")
-    //             .pathsToMatch(paths)
-    //             .build();
-    // }
 }
