@@ -80,7 +80,7 @@ public class MemberService {
 				return RsData.of("F-1", "이메일 인증이 필요합니다. 코드를 입력하세요");
 			}
 			// 인증 코드가 일치하지 않는 경우
-			if (!tempCode.equals(member.getTempCode())) {
+			if (member.getTempCode().equals(Integer.parseInt(tempCode))) {
 				return RsData.of("F-1", "이메일 인증 코드가 일치하지 않습니다.");
 			}
 			// 일치하면 인증 처리
