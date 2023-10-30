@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class FeedService {
 
     private final FeedRepository feedRepository;
+    private final WebClientService webClientService;
 
     /**
      * 검색 필터링
@@ -35,6 +37,28 @@ public class FeedService {
 
         feed.updateViewCount();
 
+        return feed;
+    }
+
+    /**
+     * 피드 좋아요
+     */
+    @Transactional
+    public Feed likeById(long id) {
+        Feed feed = feedRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+        webClientService.sendSnsApi("/likes", feed);
+        feed.updateLikeCount();
+        return feed;
+    }
+
+    /**
+     * 피드 공유
+     */
+    @Transactional
+    public Feed shareById(long id) {
+        Feed feed = feedRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
+        webClientService.sendSnsApi("/share", feed);
+        feed.updateShareCount();
         return feed;
     }
 }

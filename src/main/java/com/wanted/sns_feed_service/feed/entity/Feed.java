@@ -67,4 +67,12 @@ public class Feed {
 	public void updateViewCount() {
 		this.viewCount++;
 	}
+
+	public void updateLikeCount() {
+		this.likeCount++;
+	}
+
+	public void updateShareCount() {
+		this.shareCount++;
+	}
 }

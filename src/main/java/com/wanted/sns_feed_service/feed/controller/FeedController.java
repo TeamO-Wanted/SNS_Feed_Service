@@ -63,4 +63,24 @@ public class FeedController {
 
         return ResponseEntity.ok().body(new FeedDetailResponse(feed));
     }
+
+    /**
+     * 피드 좋아요
+     */
+    @PutMapping("/like/{id}")
+    public ResponseEntity<FeedDetailResponse> likeFeed(@PathVariable long id) {
+        Feed feed = feedService.likeById(id);
+
+        return ResponseEntity.ok().body(new FeedDetailResponse(feed));
+    }
+
+    /**
+     * 피드 공유
+     */
+    @PutMapping("/share/{id}")
+    public ResponseEntity<FeedDetailResponse> shareFeed(@PathVariable long id) {
+        Feed feed = feedService.shareById(id);
+
+        return ResponseEntity.ok().body(new FeedDetailResponse(feed));
+    }
 }
