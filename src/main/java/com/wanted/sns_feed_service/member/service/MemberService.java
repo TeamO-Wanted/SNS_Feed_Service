@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.wanted.sns_feed_service.email.service.EmailService;
 import com.wanted.sns_feed_service.jwt.JwtProvider;
 import com.wanted.sns_feed_service.member.entity.Member;
 import com.wanted.sns_feed_service.member.repository.MemberRepository;
@@ -24,9 +25,8 @@ public class MemberService {
 	private final MemberRepository memberRepository;
 	private final JwtProvider jwtProvider;
 
-	private final JavaMailSender mailSender;
-	@Value("${spring.mail.username}")
-	private String ADMIN_ADDRESS;
+	private final EmailService emailService;
+
 
 	@Transactional
 	public RsData join(String account, String password, String email) {
@@ -46,20 +46,11 @@ public class MemberService {
 			.build();
 
 		memberRepository.save(member);
-		// 메일 발송
-		sendEmail(email, account, Integer.toString(temp));
+
+		// 비동기 방식의 메서드를 다른 class에서 호출해야 하기에 따로 호출
+		emailService.sendEmail(email, account, Integer.toString(temp));
 
 		return RsData.of("S-1", "회원가입 완료 최초 로그인 시 이메일 인증 코드를 확인하고 입력해주세요");
-	}
-
-	@Async // 비동기
-	public void sendEmail(String email, String userName, String tempCode) {
-		SimpleMailMessage message = new SimpleMailMessage();
-		message.setTo(email);
-		message.setFrom(ADMIN_ADDRESS);
-		message.setSubject(userName+"님의 임시 인증코드 안내 메일입니다.");
-		message.setText("안녕하세요 "+userName+"님의 임시 인증 코드는 [" + tempCode +"] 입니다. \n 최초 로그인 시 인증 코드를 입력해주세요.");
-		mailSender.send(message);
 	}
 
 	public int createNumber(){
