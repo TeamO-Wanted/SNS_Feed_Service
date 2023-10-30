@@ -17,7 +17,7 @@ public class EmailService {
 	private String ADMIN_ADDRESS;
 	private final JavaMailSender mailSender;
 
-	@Async // 비동기
+	@Async("taskExecutor1") // 비동기
 	public void sendEmail(String email, String userName, String tempCode) {
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(email);
