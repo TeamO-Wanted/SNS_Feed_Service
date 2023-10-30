@@ -13,11 +13,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wanted.sns_feed_service.member.entity.Member;
 import com.wanted.sns_feed_service.member.repository.MemberRepository;
+import com.wanted.sns_feed_service.rsData.RsData;
+
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -110,5 +114,96 @@ public class MemberControllerTests {
 			.andExpect(status().is2xxSuccessful())
 			.andExpect(jsonPath("$.resultCode").value("F-1"))
 			.andExpect(jsonPath("$.msg").value("비밀번호는 10자 이상 입력해야 하며, 숫자로만 이루어 질 수 없으며 3회 이상 연속되는 문자를 사용할 수 없습니다."));
+	}
+
+	@Test
+	@DisplayName("여러번 로그인 해도 아직 토큰이 유효하다면 동일한 토큰을 발급한다.")
+	void t4() throws Exception {
+		// When
+		ResultActions resultActions = mvc
+			.perform(
+				post("/member/signin")
+					.content("""
+                    {
+                        "account": "user1",
+                        "password": "1234"
+                    }
+                    """.stripIndent())
+					// JSON 형태로 보내겠다
+					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+			)
+			.andDo(print());
+
+		// Then
+		resultActions
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(jsonPath("$.resultCode").value("S-1"))
+			.andExpect(jsonPath("$.msg").value( "JWT 발급 성공"))
+			.andExpect(jsonPath("$.data").isNotEmpty());
+	}
+
+	@Test
+	@DisplayName("여러번 로그인 해도 아직 토큰이 유효하다면 동일한 토큰을 발급한다.")
+	void t5() throws Exception {
+		// When
+		ResultActions resultActions = mvc
+			.perform(
+				post("/member/signin")
+					.content("""
+                    {
+                        "account": "user1",
+                        "password": "1234"
+                    }
+                    """.stripIndent())
+					// JSON 형태로 보내겠다
+					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+			)
+			.andDo(print());
+
+		// Then
+		resultActions
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(jsonPath("$.resultCode").value("S-1"))
+			.andExpect(jsonPath("$.msg").value( "JWT 발급 성공"));
+
+		MvcResult result = resultActions.andReturn();
+		String jsonResponse = result.getResponse().getContentAsString();
+
+		// JSON 문자열을 Java 객체로 변환
+		ObjectMapper objectMapper = new ObjectMapper();
+		RsData<String> response = objectMapper.readValue(jsonResponse, RsData.class);
+
+		String tmp1 = response.getData();
+
+		// 두 번째 요청 수행
+		ResultActions resultActions2 = mvc
+			.perform(
+				post("/member/signin")
+					.content("""
+                    {
+                        "account": "user1",
+                        "password": "1234"
+                    }
+                    """.stripIndent())
+					// JSON 형태로 보내겠다
+					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+			)
+			.andDo(print());
+
+		// Then (두 번째 응답 처리)
+		resultActions2
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(jsonPath("$.resultCode").value("S-1"))
+			.andExpect(jsonPath("$.msg").value("JWT 발급 성공"));
+
+		MvcResult result2 = resultActions2.andReturn();
+		String jsonResponse2 = result2.getResponse().getContentAsString();
+
+		// 두 번째 응답 데이터를 Java 객체로 변환
+		RsData<String> response2 = objectMapper.readValue(jsonResponse2, RsData.class);
+
+		String tmp2 = response2.getData();
+
+		assertThat(tmp1).isEqualTo(tmp2);
 	}
 }
