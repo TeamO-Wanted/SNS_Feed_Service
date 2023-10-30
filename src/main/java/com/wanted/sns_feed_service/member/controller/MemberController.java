@@ -64,4 +64,34 @@ public class MemberController {
 		return rsData;
 	}
 
+	@Data
+	public static class SignInRequest {
+		@NotBlank(message = "id를 입력해주세요")
+		@Schema(description = "사용자 계정", example = "user123")
+		private String account;
+		@NotBlank(message = "pw를 입력해주세요")
+		@Schema(description = "사용자 비밀번호 (10자 이상, 숫자만으로 구성 불가, 3회 이상 연속되는 문자 사용 불가)", example = "password129")
+		private String password;
+
+		@Schema(description = "최초 로그인 시 이메일 인증 코드", example = "000000")
+		private String tempCode = "";
+	}
+
+	@PostMapping("/signin")
+	@Operation(summary = "JWT 발급")
+	public RsData signIn(@Valid @RequestBody SignInRequest signInRequest, BindingResult bindingResult) {
+		// 요청 객체에서 입력하지 않은 부분이 있다면 메세지를 담아서 RsData 객체 바로 리턴
+		if (bindingResult.hasErrors()) {
+			List<String> errorMessages = bindingResult.getAllErrors()
+				.stream()
+				.map(error -> error.getDefaultMessage())
+				.collect(Collectors.toList());
+			return RsData.of("F-1", errorMessages.get(0));
+		}
+
+		RsData<String> rsData = memberService.login(signInRequest.getAccount(), signInRequest.getPassword(), signInRequest.getTempCode());
+
+		return rsData;
+	}
+
 }
