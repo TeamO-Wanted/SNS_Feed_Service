@@ -117,7 +117,7 @@ public class MemberControllerTests {
 	}
 
 	@Test
-	@DisplayName("여러번 로그인 해도 아직 토큰이 유효하다면 동일한 토큰을 발급한다.")
+	@DisplayName("로그인 시 JWT 발급 테스트")
 	void t4() throws Exception {
 		// When
 		ResultActions resultActions = mvc
