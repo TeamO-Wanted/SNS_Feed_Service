@@ -21,7 +21,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("v1/feed")
+@RequestMapping("/feed")
 @Tag(name = "FeedController", description = "피드 컨트롤러")
 public class FeedController {
 
