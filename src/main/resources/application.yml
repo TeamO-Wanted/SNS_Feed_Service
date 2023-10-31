@@ -19,3 +19,5 @@ logging:
     com.wanted.sns_feed_service: DEBUG  #패키지명
     org.hibernate.orm.jdbc.bind: TRACE # SQL 완벽하게 나오게(?에 매칭된 숫자 출력)
     org.hibernate.orm.jdbc.extract: TRACE #쿼리의 결과도 출력됨
+
+
