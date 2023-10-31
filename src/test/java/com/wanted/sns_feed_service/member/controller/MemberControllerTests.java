@@ -206,4 +206,58 @@ public class MemberControllerTests {
 
 		assertThat(tmp1).isEqualTo(tmp2);
 	}
+
+	@Test
+	@DisplayName("올바른 이메일 인증 코드를 입력했을 때 JWT가 발급되어야 함")
+	void t6() throws Exception {
+		// When
+		ResultActions resultActions = mvc
+			.perform(
+				post("/member/signin")
+					.content("""
+                    {
+                        "account": "user3",
+                        "password": "1234",
+                        "tempCode" : "123456"
+                    }
+                    """.stripIndent())
+					// JSON 형태로 보내겠다
+					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+			)
+			.andDo(print());
+
+		// Then
+		resultActions
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(jsonPath("$.resultCode").value("S-1"))
+			.andExpect(jsonPath("$.msg").value( "JWT 발급 성공"))
+			.andExpect(jsonPath("$.data").isNotEmpty());
+	}
+
+	@Test
+	@DisplayName("잘못된 이메일 인증 코드를 입력했을 때 실패 메시지 출력")
+	void t7() throws Exception {
+		// When
+		ResultActions resultActions = mvc
+			.perform(
+				post("/member/signin")
+					.content("""
+                    {
+                        "account": "user3",
+                        "password": "1234",
+                        "tempCode" : "12356"
+                    }
+                    """.stripIndent())
+					// JSON 형태로 보내겠다
+					.contentType(new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8))
+			)
+			.andDo(print());
+
+		// Then
+		resultActions
+			.andExpect(status().is2xxSuccessful())
+			.andExpect(jsonPath("$.resultCode").value("F-1"))
+			.andExpect(jsonPath("$.msg").value( "이메일 인증 코드가 일치하지 않습니다."))
+			.andExpect(jsonPath("$.data").isEmpty());
+	}
 }

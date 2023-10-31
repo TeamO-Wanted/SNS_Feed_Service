@@ -43,6 +43,7 @@ public class NotProd {
 			Member user3 = Member.builder()
 				.account("user3")
 				.password(password)
+				.tempCode(123456)
 				.email("user3@test.com")
 				.build();
 
