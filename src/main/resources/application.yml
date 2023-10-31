@@ -21,6 +21,3 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE #쿼리의 결과도 출력됨
 
 
-custom:
-  jwt:
-    secretKey: secretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKeysecretKey

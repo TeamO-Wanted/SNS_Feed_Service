@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class StatisticsResponse {
     private String date;
-    private int count;
+    private long count;
 }

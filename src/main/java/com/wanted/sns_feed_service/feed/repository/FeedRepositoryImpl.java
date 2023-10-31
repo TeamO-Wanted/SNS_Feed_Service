@@ -134,7 +134,7 @@ public class FeedRepositoryImpl extends Querydsl4RepositorySupport implements Fe
         //날짜/시간 형식 설정
         StringTemplate formattedDate = getFormattedDate(feed.createdAt, type);
         //count 일 시 게시물 개수 일자별 출력, 아닐 때는 view count 등 합계 출력
-        return select(Projections.fields(StatisticsResponse.class, formattedDate.as("date"), value.equals("count") ? feed.count().intValue().as("count") : value.equals("view_count") ? feed.viewCount.sum().as("count") : value.equals("like_count") ? feed.likeCount.sum().as("count") : feed.shareCount.sum().as("count")))
+        return select(Projections.fields(StatisticsResponse.class, formattedDate.as("date"), value.equals("count") ? feed.count().as("count") : value.equals("view_count") ? feed.viewCount.sum().longValue().as("count") : value.equals("like_count") ? feed.likeCount.sum().longValue().as("count") : feed.shareCount.sum().longValue().as("count")))
                 .from(feed)
                 .where(hashtagFilter(hashtag),
                         feed.createdAt.between(start.atStartOfDay(), end.plusDays(1).atStartOfDay().minusNanos(1))
