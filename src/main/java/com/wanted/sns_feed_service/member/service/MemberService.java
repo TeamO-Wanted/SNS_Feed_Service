@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,11 +26,10 @@ public class MemberService {
 
 	private final EmailService emailService;
 
-
 	@Transactional
 	public RsData join(String account, String password, String email) {
 		Optional<Member> opMember = memberRepository.findByAccount(account);
-		if(opMember.isPresent()) {
+		if (opMember.isPresent()) {
 			return RsData.of("F-1", "이미 가입한 Id가 있습니다.");
 		}
 
@@ -56,7 +51,7 @@ public class MemberService {
 		return RsData.of("S-1", "회원가입 완료 최초 로그인 시 이메일 인증 코드를 확인하고 입력해주세요");
 	}
 
-	public int createNumber(){
+	public int createNumber() {
 		return (int)(Math.random() * (90000)) + 100000;// (int) Math.random() * (최댓값-최소값+1) + 최소값
 	}
 
