@@ -63,8 +63,31 @@ public class FeedController {
      * 피드 상세 조회
      */
     @GetMapping("/{id}")
+    @Operation(summary = "피드 상세 조회", description = "피드 상세 정보를 조회하고, viewCount가 1 증가합니다.")
     public ResponseEntity<FeedDetailResponse> findFeed(@PathVariable long id) {
         Feed feed = feedService.findById(id);
+
+        return ResponseEntity.ok().body(new FeedDetailResponse(feed));
+    }
+
+    /**
+     * 피드 좋아요
+     */
+    @PutMapping("/like/{id}")
+    @Operation(summary = "피드 좋아요", description = "외부 서비스의 피드 좋아요 endpoint를 호출합니다. likeCount가 1 증가합니다.")
+    public ResponseEntity<FeedDetailResponse> likeFeed(@PathVariable long id) throws Exception {
+        Feed feed = feedService.likeById(id);
+
+        return ResponseEntity.ok().body(new FeedDetailResponse(feed));
+    }
+
+    /**
+     * 피드 공유
+     */
+    @PutMapping("/share/{id}")
+    @Operation(summary = "피드 공유", description = "외부 서비스의 피드 공유 endpoint를 호출합니다. shareCount가 1 증가합니다.")
+    public ResponseEntity<FeedDetailResponse> shareFeed(@PathVariable long id) throws Exception {
+        Feed feed = feedService.shareById(id);
 
         return ResponseEntity.ok().body(new FeedDetailResponse(feed));
     }
@@ -84,4 +107,3 @@ public class FeedController {
         return ResponseEntity.ok(feedService.getFeeds(hashtag, type, start, end, value));
     }
 }
-
