@@ -50,9 +50,10 @@ public class FeedService {
      * 피드 좋아요
      */
     @Transactional
-    public Feed likeById(long id) {
+    public Feed likeById(long id) throws Exception {
         Feed feed = feedRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
-        webClientService.sendSnsApi("/likes", feed);
+        // 외부 SNS API 호출 로직: 구현은 했으나 실제 유효한 URL이 아니므로 주석 처리. 필요시 주석 해제.
+//        webClientService.sendSnsApi("/likes", feed);
         feed.updateLikeCount();
         return feed;
     }
@@ -61,9 +62,10 @@ public class FeedService {
      * 피드 공유
      */
     @Transactional
-    public Feed shareById(long id) {
+    public Feed shareById(long id) throws Exception {
         Feed feed = feedRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
-        webClientService.sendSnsApi("/share", feed);
+        // 외부 SNS API 호출 로직: 구현은 했으나 실제 유효한 URL이 아니므로 주석 처리. 필요시 주석 해제.
+//        webClientService.sendSnsApi("/share", feed);
         feed.updateShareCount();
         return feed;
     }
