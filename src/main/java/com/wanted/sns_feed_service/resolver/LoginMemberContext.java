@@ -1,5 +1,6 @@
 package com.wanted.sns_feed_service.resolver;
 
+import com.wanted.sns_feed_service.member.entity.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -7,6 +8,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class LoginMemberContext {
   private ThreadLocal<LoginMember> loginMemberThreadLocal;
+  public void save(Member member){
+    loginMemberThreadLocal.set(LoginMember.of(member));
+  }
   public LoginMember getLoginMember(){
     return loginMemberThreadLocal.get();
   }
