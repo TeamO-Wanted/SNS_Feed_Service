@@ -34,6 +34,12 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     return HandlerInterceptor.super.preHandle(request, response, handler);
   }
 
+  @Override
+  public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    releaseLoginMemberContext();
+    HandlerInterceptor.super.afterCompletion(request, response, handler, ex);
+  }
+
   private String extractToken(HttpServletRequest request){
     return request.getHeader("Authorization");
   }
@@ -50,5 +56,8 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     if (memberOptional.isEmpty())
       return;
     loginMemberContext.save(memberOptional.get());
+  }
+  private void releaseLoginMemberContext(){
+    loginMemberContext.remove();
   }
 }
