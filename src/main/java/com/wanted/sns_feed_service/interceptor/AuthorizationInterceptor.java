@@ -38,7 +38,7 @@ public class AuthorizationInterceptor implements HandlerInterceptor {
     return request.getHeader("Authorization");
   }
   private Optional<Member> extractMember(String token){
-    return memberRepository.findById((Long) jwtProvider.getClaims(token).get("id"));
+    return memberRepository.findById(Long.valueOf((Integer)jwtProvider.getClaims(token).get("id")));
   }
   private boolean verifyAccessToken(String token,Optional<Member> memberOptional){
     if(memberOptional.isEmpty())

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class LoginMemberContext {
-  private ThreadLocal<LoginMember> loginMemberThreadLocal;
+  private final ThreadLocal<LoginMember> loginMemberThreadLocal = new ThreadLocal<>();
   public void save(Member member){
     loginMemberThreadLocal.set(LoginMember.of(member));
   }
