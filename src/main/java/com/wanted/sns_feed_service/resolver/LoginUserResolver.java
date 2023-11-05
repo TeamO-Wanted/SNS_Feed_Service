@@ -12,6 +12,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 @Component
 @RequiredArgsConstructor
 public class LoginUserResolver implements HandlerMethodArgumentResolver {
+  private final LoginMemberContext loginMemberContext;
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
     return parameter.hasParameterAnnotation(LoginUser.class) && parameter.getParameterType().equals(LoginMember.class);
@@ -19,7 +20,6 @@ public class LoginUserResolver implements HandlerMethodArgumentResolver {
 
   @Override
   public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer, NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-
-    return null;
+    return loginMemberContext.getLoginMember();
   }
 }
