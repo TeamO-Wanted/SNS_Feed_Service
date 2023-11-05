@@ -6,6 +6,8 @@ import com.wanted.sns_feed_service.hashTag.entity.HashTag;
 import com.wanted.sns_feed_service.hashTag.repository.HashTagRepository;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Slf4j
+@Transactional
 class FeedControllerTest {
 
     @Autowired
@@ -34,12 +37,30 @@ class FeedControllerTest {
     @Autowired
     HashTagRepository hashTagRepository;
 
+    @BeforeEach
+    void init(){
+        // given
+
+        // 태그 추가
+        HashTag tag = HashTag.builder()
+                .name("테스트테그3")
+                .build();
+        hashTagRepository.save(tag);
+
+        // 피드 추가
+        Feed insta = Feed.builder().contentId("test").type(INSTAGRAM).title("test").content("test").build();
+
+        insta.addTag(tag);
+
+        feedRepository.save(insta);
+    }
+
     @DisplayName("해시 테그 검색 테스트, hashtag 가 정확하게 일치하지 않으면 데이터가 0건")
     @Test
     void 해시_테그_검색_실패() throws Exception {
 
         //when, then
-        mockMvc.perform(get("/v1/feed")
+        mockMvc.perform(get("/feed")
                         .param("hashtag", "테스트")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -52,7 +73,7 @@ class FeedControllerTest {
     void 해시_테그_검색() throws Exception {
 
         //when, then
-        mockMvc.perform(get("/v1/feed")
+        mockMvc.perform(get("/feed")
                         .param("hashtag", "테스트태그1")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -65,7 +86,7 @@ class FeedControllerTest {
     void 타입_검색() throws Exception {
 
         //when, then
-        mockMvc.perform(get("/v1/feed")
+        mockMvc.perform(get("/feed")
                         .param("type", "INSTAGRAM")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -79,12 +100,12 @@ class FeedControllerTest {
     void 정렬_테스트1() throws Exception {
 
         //when, then
-        mockMvc.perform(get("/v1/feed")
+        mockMvc.perform(get("/feed")
                         .param("order_by", "DESC") // 가장 최근에 생성한 피드가 가장 위에 오게 됨.
                         .param("order_type", "created_at")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.content[0].content").value("쓰레드 테스트 피드9"))
+                .andExpect(jsonPath("$.data.content[0].content").value("test"))
                 .andDo(print());
     }
 
@@ -93,7 +114,7 @@ class FeedControllerTest {
     void 정렬_테스트2() throws Exception {
 
         //when, then
-        mockMvc.perform(get("/v1/feed")
+        mockMvc.perform(get("/feed")
                         .param("order_by", "asc") // 가장 오래전에 생성한 피드가 가장 위에 오게 됨.
                         .param("order_type", "created_at")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -107,7 +128,7 @@ class FeedControllerTest {
     void 검색어_테스트() throws Exception {
 
         //when, then
-        mockMvc.perform(get("/v1/feed")
+        mockMvc.perform(get("/feed")
                         .param("search_by", "title") // title 로 검색
                         .param("search", "9")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -141,7 +162,7 @@ class FeedControllerTest {
         feedRepository.save(insta2);
 
         //when, then
-        mockMvc.perform(get("/v1/feed")
+        mockMvc.perform(get("/feed")
                         .param("search", "꿔바로우")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
@@ -179,7 +200,7 @@ class FeedControllerTest {
         feedRepository.save(insta2);
 
         // when, then
-        mockMvc.perform(get("/v1/feed")
+        mockMvc.perform(get("/feed")
                         .param("hashtag", "타짜") // tag 로 검색
                         .param("order_target","create_at") // 생성순
                         .param("order_by","asc") // 먼저 생성된 데이터가 가장 상단에 위치
@@ -197,16 +218,16 @@ class FeedControllerTest {
     void 통합_검색_테스트() throws Exception {
 
         //when, then
-        mockMvc.perform(get("/v1/feed")
-                        .param("hashtag", "테스트태그3") // 해시테그로 검색
-                        .param("search", "9") // 검색어
+        mockMvc.perform(get("/feed")
+                        .param("hashtag", "테스트테그3") // 해시테그로 검색
+                        .param("search", "test") // 검색어
                         .param("order_by", "desc") // 정렬 순서
                         .param("page_count", "1") // 하나의 page 에 담길 데이터 수
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.totalElements").value(2)) // 총 검색된 데이터 건 수
-                .andExpect(jsonPath("$.data.totalPages").value(2)) // 총 페이지 수
-                .andExpect(jsonPath("$.data.content[0].content").value("쓰레드 테스트 피드9"))
+                .andExpect(jsonPath("$.data.totalElements").value(1)) // 총 검색된 데이터 건 수
+                .andExpect(jsonPath("$.data.totalPages").value(1)) // 총 페이지 수
+                .andExpect(jsonPath("$.data.content[0].content").value("test"))
                 .andDo(print());
     }
 
@@ -215,7 +236,7 @@ class FeedControllerTest {
     void 통합_검색_테스트2() throws Exception {
 
         //when, then
-        mockMvc.perform(get("/v1/feed")
+        mockMvc.perform(get("/feed")
                         .param("type", "INSTAGRAM") // 타입으로 검색
                         .param("search_by", "title") // 타이틀로 검색
                         .param("search", "틀0") // 검색어
@@ -230,7 +251,7 @@ class FeedControllerTest {
     @Test
     public void findFeed() throws Exception {
         // given
-        final String url = "/v1/feed/{id}";
+        final String url = "/feed/{id}";
 
         // when
         final ResultActions resultActions = mockMvc.perform(get(url, 1));
