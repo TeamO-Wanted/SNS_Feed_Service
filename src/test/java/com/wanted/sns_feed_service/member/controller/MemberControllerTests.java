@@ -45,7 +45,7 @@ public class MemberControllerTests {
 						{
 						    "account": "puar12",
 						    "password": "cjfgus2514",
-						    "email": "r4560798@naver.com"
+						    "email": "r4560798@test.com"
 						}
 						""".stripIndent())
 					// JSON 형태로 보내겠다
@@ -125,7 +125,7 @@ public class MemberControllerTests {
 				post("/member/signin")
 					.content("""
                     {
-                        "account": "user1",
+                        "account": "user2",
                         "password": "1234"
                     }
                     """.stripIndent())
@@ -151,7 +151,7 @@ public class MemberControllerTests {
 				post("/member/signin")
 					.content("""
                     {
-                        "account": "user1",
+                        "account": "user2",
                         "password": "1234"
                     }
                     """.stripIndent())
@@ -181,7 +181,7 @@ public class MemberControllerTests {
 				post("/member/signin")
 					.content("""
                     {
-                        "account": "user1",
+                        "account": "user2",
                         "password": "1234"
                     }
                     """.stripIndent())

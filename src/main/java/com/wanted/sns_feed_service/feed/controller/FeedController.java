@@ -9,6 +9,7 @@ import com.wanted.sns_feed_service.response.FeedDetailResponse;
 import com.wanted.sns_feed_service.response.ResResult;
 import com.wanted.sns_feed_service.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @RequestMapping("/feed")
 @Tag(name = "FeedController", description = "피드 컨트롤러")
+@SecurityRequirement(name = "bearerAuth")
 public class FeedController {
 
     private final FeedService feedService;
@@ -97,9 +99,10 @@ public class FeedController {
      */
 
     @GetMapping("/statistics")
+    @Operation(summary = "통계 자료 조회", description = "통계 자료를 조회합니다.")
     public ResponseEntity<CommonResponse> getFeedByHashtag(
             @RequestParam(value = "hashtag", required = false, defaultValue = "기본값") String hashtag,
-            @RequestParam(value = "type", required = true) String type,
+            @RequestParam(value = "type") String type,
             @RequestParam(value = "start", required = false) LocalDate start,
             @RequestParam(value = "end", required = false) LocalDate end,
             @RequestParam(value = "value", required = false, defaultValue = "count") String value

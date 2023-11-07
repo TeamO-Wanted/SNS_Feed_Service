@@ -3,6 +3,8 @@ package com.wanted.sns_feed_service.config;
 import com.wanted.sns_feed_service.interceptor.AuthorizationInterceptor;
 import com.wanted.sns_feed_service.resolver.LoginUserResolver;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -18,7 +20,7 @@ public class MvcConfig implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(InterceptorRegistry registry){
-    registry.addInterceptor(authorizationInterceptor).excludePathPatterns("/member/**");
+    registry.addInterceptor(authorizationInterceptor).excludePathPatterns("/member/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html");
   }
   @Override
   public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
