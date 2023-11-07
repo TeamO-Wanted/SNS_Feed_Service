@@ -34,6 +34,7 @@ public class FeedRepositoryImpl extends Querydsl4RepositorySupport implements Fe
      */
     @Override
     public Page<FeedResponseDto> filter(String hashtag, // hashtag
+                                        String account,
                                         Type type, // feed type
                                         String searchBy, // 검색 기준 (제목, 내용, 제목 + 내용)
                                         String orderBy,// 정렬 순서 (DESC, ASC)
@@ -43,7 +44,7 @@ public class FeedRepositoryImpl extends Querydsl4RepositorySupport implements Fe
 
         JPAQuery<Feed> feedJPAQuery = selectFrom(feed)
                 .where(
-                        hashtagFilter(hashtag),
+                        hashtagFilter(hashtag, account),
                         typeFilter(type),
                         searchFilter(searchBy, searchKeyword)
                 );
@@ -111,9 +112,9 @@ public class FeedRepositoryImpl extends Querydsl4RepositorySupport implements Fe
     /**
      * hashtag 조회
      */
-    private BooleanExpression hashtagFilter(String hashtag) {
+    private BooleanExpression hashtagFilter(String hashtag, String account) {
         if (hashtag == null || hashtag.isEmpty()) {
-            return feed.hashTags.any().isNotNull(); // TODO : null 이면 자신의 계정 반환하게 하기, 현재는 모든 목록 불러오게 함.
+            return feed.hashTags.any().name.eq(account); // hash tag 값이 비어있을 때 로그인한 사용자 이름이 태그된 피드를 가져옴
         }
         return feed.hashTags.any().name.eq(hashtag);
     }
@@ -130,13 +131,13 @@ public class FeedRepositoryImpl extends Querydsl4RepositorySupport implements Fe
      * 통계
      */
     @Override
-    public List<StatisticsResponse> getFeedStatistics(String hashtag, String type, LocalDate start, LocalDate end, String value) {
+    public List<StatisticsResponse> getFeedStatistics(String hashtag, String account, String type, LocalDate start, LocalDate end, String value) {
         //날짜/시간 형식 설정
         StringTemplate formattedDate = getFormattedDate(feed.createdAt, type);
         //count 일 시 게시물 개수 일자별 출력, 아닐 때는 view count 등 합계 출력
         return select(Projections.fields(StatisticsResponse.class, formattedDate.as("date"), value.equals("count") ? feed.count().as("count") : value.equals("view_count") ? feed.viewCount.sum().longValue().as("count") : value.equals("like_count") ? feed.likeCount.sum().longValue().as("count") : feed.shareCount.sum().longValue().as("count")))
                 .from(feed)
-                .where(hashtagFilter(hashtag),
+                .where(hashtagFilter(hashtag, account),
                         feed.createdAt.between(start.atStartOfDay(), end.plusDays(1).atStartOfDay().minusNanos(1))
                 ).groupBy(formattedDate).fetch();
     }

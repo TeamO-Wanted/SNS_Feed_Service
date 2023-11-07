@@ -12,6 +12,7 @@ import java.util.List;
 public interface FeedRepositoryCustom {
 
     Page<FeedResponseDto> filter(String hashtag,
+                                 String account,
                                  Type type,
                                  String searchBy,
                                  String order,
@@ -20,6 +21,7 @@ public interface FeedRepositoryCustom {
                                  Pageable pageable);
 
     List<StatisticsResponse> getFeedStatistics(String hashtag,
+                                               String account,
                                                String type,
                                                LocalDate start,
                                                LocalDate end,

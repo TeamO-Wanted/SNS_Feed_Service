@@ -4,11 +4,14 @@ package com.wanted.sns_feed_service.feed.controller;
 import com.wanted.sns_feed_service.feed.FeedService;
 import com.wanted.sns_feed_service.feed.entity.Feed;
 import com.wanted.sns_feed_service.feed.entity.Type;
+import com.wanted.sns_feed_service.resolver.LoginMember;
+import com.wanted.sns_feed_service.resolver.LoginUser;
 import com.wanted.sns_feed_service.response.CommonResponse;
 import com.wanted.sns_feed_service.response.FeedDetailResponse;
 import com.wanted.sns_feed_service.response.ResResult;
 import com.wanted.sns_feed_service.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +38,8 @@ public class FeedController {
     @GetMapping("")
     @Operation(summary = "피드 목록", description = "조건에 따른 피드 검색을 하고, 피드 목록을 불러 옵니다.")
     public ResponseEntity<ResResult> search(
-            @RequestParam(value = "hashtag", required = false) String hashtag, // 정확히 일치하는 값 조회, 미 입력시 본인 계정
+            @RequestParam(value = "hashtag", required = false) String hashtag, // 정확히 일치하는 해시태그 값 조회
+            @Parameter(hidden = true) @LoginUser LoginMember loginMember,
             @RequestParam(value = "type", required = false) Type type, // 미입력 시 모든 type 조회
             @RequestParam(value = "order_by", required = false, defaultValue = "DESC") String orderBy, // desc, asc
             @RequestParam(value = "order_target", required = false, defaultValue = "created_at") String orderTarget, // 정렬 기준이며, created_at,updated_at,like_count,share_count,view_count 가 사용 가능, 오름차순 , 내림차순 모두 가능
@@ -43,7 +47,6 @@ public class FeedController {
             @RequestParam(value = "search", required = false) String searchKeyword, // 검색할 키워드 title 또는 content 또는 title + content 검색
             @RequestParam(value = "page", defaultValue = "0") int pageNumber, // 조회하려는 페이지
             @RequestParam(value = "page_count", defaultValue = "10") int pageSize // 페이지 당 게시물 갯수
-            //TODO : username 받기
     ) {
 
         ResponseCode feedSearchCode = ResponseCode.FEED_SEARCH;
@@ -55,7 +58,7 @@ public class FeedController {
                         .responseCode(feedSearchCode)
                         .code(feedSearchCode.getCode())
                         .message(feedSearchCode.getMessage())
-                        .data(feedService.search(hashtag, type, searchBy, orderBy, orderTarget, searchKeyword, pageable))
+                        .data(feedService.search(hashtag, loginMember.getAccount(), type, searchBy, orderBy, orderTarget, searchKeyword, pageable))
                         .build()
 
         );
@@ -102,11 +105,12 @@ public class FeedController {
     @Operation(summary = "통계 자료 조회", description = "통계 자료를 조회합니다.")
     public ResponseEntity<CommonResponse> getFeedByHashtag(
             @RequestParam(value = "hashtag", required = false, defaultValue = "기본값") String hashtag,
+            @Parameter(hidden = true) LoginMember loginMember,
             @RequestParam(value = "type") String type,
             @RequestParam(value = "start", required = false) LocalDate start,
             @RequestParam(value = "end", required = false) LocalDate end,
             @RequestParam(value = "value", required = false, defaultValue = "count") String value
     ) {
-        return ResponseEntity.ok(feedService.getFeeds(hashtag, type, start, end, value));
+        return ResponseEntity.ok(feedService.getFeeds(hashtag, loginMember.getAccount(), type, start, end, value));
     }
 }
