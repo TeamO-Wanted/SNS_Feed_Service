@@ -32,8 +32,8 @@ public class NotProd {
 				.account("user1")
 				.password(password)
 				.email("user1@test.com")
-				// 24-11-06 까지 유효
-				.accessToken("eyJhbGciOiJIUzUxMiJ9.eyJib2R5Ijoie1wiaWRcIjoxLFwiYWNjb3VudFwiOlwidXNlcjFcIn0iLCJleHAiOjE3MzA3ODI3OTd9.RiMDTPrgdefq0uFTac1sXeF6U1HVMu4nr3teH48qQc1HipbalcnuqqJSmIrEGb3jiT1x-0j2MvIWeHFWgFhHrA")
+				// 24-11-08 오후 8시 까지 유효
+				.accessToken("eyJhbGciOiJIUzUxMiJ9.eyJib2R5Ijoie1wiaWRcIjoxLFwiYWNjb3VudFwiOlwidXNlcjFcIn0iLCJleHAiOjE3MzA4OTY3MDd9.Oy5WrKd9KA3BspkSekPymLlYuyBcgrXVLQyMp3zSWN1SZgbqUpAYwNlyaOyY0QCGbkpaVKf-KZNP-9G5alNICQ")
 				.build();
 
 			Member user2 = Member.builder()
