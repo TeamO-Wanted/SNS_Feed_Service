@@ -32,255 +32,279 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 class FeedControllerTest {
 
-	@Autowired
-	MockMvc mockMvc;
-	@Autowired
-	FeedRepository feedRepository;
-	@Autowired
-	HashTagRepository hashTagRepository;
+    @Autowired
+    MockMvc mockMvc;
+    @Autowired
+    FeedRepository feedRepository;
+    @Autowired
+    HashTagRepository hashTagRepository;
 
-	@Autowired
-	MemberRepository memberRepository;
+    @Autowired
+    MemberRepository memberRepository;
 
     Member user1;
     String user1Token;
 
-	@BeforeEach
-	void init() {
-		// given
+    @BeforeEach
+    void init() {
+        // given
 
-		// 태그 추가
-		HashTag tag = HashTag.builder()
-			.name("테스트테그3")
-			.build();
-		hashTagRepository.save(tag);
+        // 태그 추가
+        HashTag tag = HashTag.builder()
+                .name("테스트테그3")
+                .build();
 
-		// 피드 추가
-		Feed insta = Feed.builder().contentId("test").type(INSTAGRAM).title("test").content("test").build();
+        HashTag loginUserTag = HashTag.builder()
+                .name("user1")
+                .build();
+        hashTagRepository.save(tag);
+        hashTagRepository.save(loginUserTag);
 
-		insta.addTag(tag);
+        // 피드 추가
+        Feed insta = Feed.builder().contentId("test").type(INSTAGRAM).title("test").content("test").build();
 
-		feedRepository.save(insta);
+        insta.addTag(tag);
+        insta.addTag(loginUserTag);
+
+        feedRepository.save(insta);
 
         user1 = memberRepository.findByAccount("user1").get();
         user1Token = user1.getAccessToken();
-	}
+    }
 
-	@DisplayName("해시 테그 검색 테스트, hashtag 가 정확하게 일치하지 않으면 데이터가 0건")
-	@Test
-	void 해시_테그_검색_실패() throws Exception {
+    @DisplayName("해시 테그 검색 테스트, hashtag 가 정확하게 일치하지 않으면 데이터가 0건")
+    @Test
+    void 해시_테그_검색_실패() throws Exception {
 
-		//when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("hashtag", "테스트")
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content.size()").value(0))
-			.andDo(print());
-	}
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "테스트")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content.size()").value(0))
+                .andDo(print());
+    }
 
-	@DisplayName("해시 테그 검색 테스트")
-	@Test
-	void 해시_테그_검색() throws Exception {
+    @DisplayName("해시 테그 검색 테스트")
+    @Test
+    void 해시_테그_검색() throws Exception {
 
-		//when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("hashtag", "테스트태그1")
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content.size()").value(10))
-			.andDo(print());
-	}
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "테스트태그1")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content.size()").value(10))
+                .andDo(print());
+    }
 
-	@DisplayName("타입_검색 테스트")
-	@Test
-	void 타입_검색() throws Exception {
+    @DisplayName("해시 테그 검색 테스트2 - 태그를 넣지 않으면 로그인 한 사용자가 태그된 피드가 조회")
+    @Test
+    void 해시_테그_검색2() throws Exception {
 
-		//when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("type", "INSTAGRAM")
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content.size()").value(10))
-			.andExpect(jsonPath("$.data.content[0].type").value("INSTAGRAM"))
-			.andDo(print());
-	}
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content.size()").value(1))
+                .andDo(print());
+    }
 
-	@DisplayName("정렬 테스트 - created_at, 내림차순 ")
-	@Test
-	void 정렬_테스트1() throws Exception {
+    @DisplayName("타입_검색 테스트")
+    @Test
+    void 타입_검색() throws Exception {
 
-		//when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("order_by", "DESC") // 가장 최근에 생성한 피드가 가장 위에 오게 됨.
-				.param("order_type", "created_at")
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content[0].content").value("test"))
-			.andDo(print());
-	}
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "테스트태그1")
+                        .param("type", "INSTAGRAM")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content.size()").value(10))
+                .andExpect(jsonPath("$.data.content[0].type").value("INSTAGRAM"))
+                .andDo(print());
+    }
 
-	@DisplayName("정렬 테스트 - created_at, 오름차순 ")
-	@Test
-	void 정렬_테스트2() throws Exception {
+    @DisplayName("정렬 테스트 - created_at, 내림차순 ")
+    @Test
+    void 정렬_테스트1() throws Exception {
 
-		//when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("order_by", "asc") // 가장 오래전에 생성한 피드가 가장 위에 오게 됨.
-				.param("order_type", "created_at")
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content[0].content").value("인스타 테스트 피드0"))
-			.andDo(print());
-	}
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("order_by", "DESC") // 가장 최근에 생성한 피드가 가장 위에 오게 됨.
+                        .param("order_type", "created_at")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content[0].content").value("test"))
+                .andDo(print());
+    }
 
-	@DisplayName("검색어 테스트")
-	@Test
-	void 검색어_테스트() throws Exception {
+    @DisplayName("정렬 테스트 - created_at, 오름차순 ")
+    @Test
+    void 정렬_테스트2() throws Exception {
 
-		//when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("search_by", "title") // title 로 검색
-				.param("search", "9")
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content.size()").value(4)) // title 에 9가 들어간건 4개 뿐임
-			.andDo(print());
-	}
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "테스트태그1")
+                        .param("order_by", "asc") // 가장 오래전에 생성한 피드가 가장 위에 오게 됨.
+                        .param("order_type", "created_at")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content[0].content").value("인스타 테스트 피드0"))
+                .andDo(print());
+    }
 
-	@DisplayName("검색어 테스트 - search_by 를 생략하면 title + content 으로 검색")
-	@Test
-	@Transactional
-	void 검색어_테스트2() throws Exception {
+    @DisplayName("검색어 테스트")
+    @Test
+    void 검색어_테스트() throws Exception {
 
-		// given
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "테스트태그3")
+                        .param("search_by", "title") // title 로 검색
+                        .param("search", "9")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content.size()").value(2)) // title 에 9가 들어간건 2개 뿐임
+                .andDo(print());
+    }
 
-		// 태그 추가
-		HashTag tag = HashTag.builder()
-			.name("instagram")
-			.build();
-		hashTagRepository.save(tag);
+    @DisplayName("검색어 테스트 - search_by 를 생략하면 title + content 으로 검색")
+    @Test
+    @Transactional
+    void 검색어_테스트2() throws Exception {
 
-		// 피드 추가
-		Feed insta1 = Feed.builder().contentId("instagram100").type(INSTAGRAM).title("맛있는").content("꿔바로우").build();
-		Feed insta2 = Feed.builder().contentId("instagram200").type(INSTAGRAM).title("꿔바로우").content("좋아하세요?").build();
+        // given
 
-		insta1.addTag(tag);
-		insta2.addTag(tag);
+        // 태그 추가
+        HashTag tag = HashTag.builder()
+                .name("instagram")
+                .build();
+        hashTagRepository.save(tag);
 
-		feedRepository.save(insta1);
-		feedRepository.save(insta2);
+        // 피드 추가
+        Feed insta1 = Feed.builder().contentId("instagram100").type(INSTAGRAM).title("맛있는").content("꿔바로우").build();
+        Feed insta2 = Feed.builder().contentId("instagram200").type(INSTAGRAM).title("꿔바로우").content("좋아하세요?").build();
 
-		//when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("search", "꿔바로우")
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.content.size()").value(2))
-			.andDo(print());
-	}
+        insta1.addTag(tag);
+        insta2.addTag(tag);
 
-	@DisplayName("글자수 20자 제한 테스트")
-	@Test
-	@Transactional
-	void 글자수_20자_제한_테스트() throws Exception {
+        feedRepository.save(insta1);
+        feedRepository.save(insta2);
 
-		// given
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "instagram")
+                        .param("search", "꿔바로우")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.content.size()").value(2))
+                .andDo(print());
+    }
 
-		// 태그 추가
-		HashTag tag = HashTag.builder()
-			.name("타짜")
-			.build();
-		hashTagRepository.save(tag);
+    @DisplayName("글자수 20자 제한 테스트")
+    @Test
+    @Transactional
+    void 글자수_20자_제한_테스트() throws Exception {
 
-		// 피드 추가
-		String longContent = "싸늘하다. 가슴에 비수가 날아와 꽂힌다. 하지만 걱정하지 마라. 손은 눈보다 빠르니까.";
-		String shortContent = "묻고 더블로 가!";
+        // given
 
-		Feed insta1 = Feed.builder().contentId("타짜1").type(INSTAGRAM).title("타짜")
-			.content(longContent).build();
+        // 태그 추가
+        HashTag tag = HashTag.builder()
+                .name("타짜")
+                .build();
+        hashTagRepository.save(tag);
 
-		Feed insta2 = Feed.builder().contentId("타짜2").type(INSTAGRAM).title("타짜")
-			.content(shortContent).build();
+        // 피드 추가
+        String longContent = "싸늘하다. 가슴에 비수가 날아와 꽂힌다. 하지만 걱정하지 마라. 손은 눈보다 빠르니까.";
+        String shortContent = "묻고 더블로 가!";
 
-		insta1.addTag(tag);
-		insta2.addTag(tag);
+        Feed insta1 = Feed.builder().contentId("타짜1").type(INSTAGRAM).title("타짜")
+                .content(longContent).build();
 
-		feedRepository.save(insta1);
-		feedRepository.save(insta2);
+        Feed insta2 = Feed.builder().contentId("타짜2").type(INSTAGRAM).title("타짜")
+                .content(shortContent).build();
 
-		// when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("hashtag", "타짜") // tag 로 검색
-				.param("order_target", "create_at") // 생성순
-				.param("order_by", "asc") // 먼저 생성된 데이터가 가장 상단에 위치
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(MockMvcResultMatchers.jsonPath("$.data.content[0].content") // 목록의 첫번째 content 를 가져옴
-				.value(longContent.substring(0, 20) + "...")) // 글자 수가 20을 넘어가면 이후 글자는 생략됨.
-			.andExpect(MockMvcResultMatchers.jsonPath("$.data.content[1].content")
-				.value(shortContent)) // 글자 수가 20을 넘어가지 않을 때는 생략 없음.
-			.andDo(print());
-	}
+        insta1.addTag(tag);
+        insta2.addTag(tag);
 
-	@DisplayName("통합 검색 테스트")
-	@Test
-	void 통합_검색_테스트() throws Exception {
+        feedRepository.save(insta1);
+        feedRepository.save(insta2);
 
-		//when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("hashtag", "테스트테그3") // 해시테그로 검색
-				.param("search", "test") // 검색어
-				.param("order_by", "desc") // 정렬 순서
-				.param("page_count", "1") // 하나의 page 에 담길 데이터 수
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.totalElements").value(1)) // 총 검색된 데이터 건 수
-			.andExpect(jsonPath("$.data.totalPages").value(1)) // 총 페이지 수
-			.andExpect(jsonPath("$.data.content[0].content").value("test"))
-			.andDo(print());
-	}
+        // when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "타짜") // tag 로 검색
+                        .param("order_target", "create_at") // 생성순
+                        .param("order_by", "asc") // 먼저 생성된 데이터가 가장 상단에 위치
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.content[0].content") // 목록의 첫번째 content 를 가져옴
+                        .value(longContent.substring(0, 20) + "...")) // 글자 수가 20을 넘어가면 이후 글자는 생략됨.
+                .andExpect(MockMvcResultMatchers.jsonPath("$.data.content[1].content")
+                        .value(shortContent)) // 글자 수가 20을 넘어가지 않을 때는 생략 없음.
+                .andDo(print());
+    }
 
-	@DisplayName("통합 검색 테스트2")
-	@Test
-	void 통합_검색_테스트2() throws Exception {
+    @DisplayName("통합 검색 테스트")
+    @Test
+    void 통합_검색_테스트() throws Exception {
 
-		//when, then
-		mockMvc.perform(get("/feed")
-				.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-				.param("type", "INSTAGRAM") // 타입으로 검색
-				.param("search_by", "title") // 타이틀로 검색
-				.param("search", "틀0") // 검색어
-				.contentType(MediaType.APPLICATION_JSON_VALUE))
-			.andExpect(status().isOk())
-			.andExpect(jsonPath("$.data.totalElements").value(1)) // 총 검색된 데이터 건 수
-			.andExpect(jsonPath("$.data.content[0].title").value("인스타 테스트 타이틀0"))
-			.andDo(print());
-	}
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "테스트테그3") // 해시테그로 검색
+                        .param("search", "test") // 검색어
+                        .param("order_by", "desc") // 정렬 순서
+                        .param("page_count", "1") // 하나의 page 에 담길 데이터 수
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.totalElements").value(1)) // 총 검색된 데이터 건 수
+                .andExpect(jsonPath("$.data.totalPages").value(1)) // 총 페이지 수
+                .andExpect(jsonPath("$.data.content[0].content").value("test"))
+                .andDo(print());
+    }
 
-	@DisplayName("findFeed: 게시물 상세 조회에 성공한다.")
-	@Test
-	public void findFeed() throws Exception {
-		// given
-		final String url = "/feed/{id}";
+    @DisplayName("통합 검색 테스트2")
+    @Test
+    void 통합_검색_테스트2() throws Exception {
 
-		// when
-		final ResultActions resultActions = mockMvc.perform(get(url, 1)
-			.header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
-		);
+        //when, then
+        mockMvc.perform(get("/feed")
+                        .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "테스트태그1") // 해시테그로 검색
+                        .param("type", "INSTAGRAM") // 타입으로 검색
+                        .param("search_by", "title") // 타이틀로 검색
+                        .param("search", "틀0") // 검색어
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.totalElements").value(1)) // 총 검색된 데이터 건 수
+                .andExpect(jsonPath("$.data.content[0].title").value("인스타 테스트 타이틀0"))
+                .andDo(print());
+    }
 
-		// then
-		resultActions.andExpect(status().isOk())
-			.andExpect(jsonPath("$.contentId").value("instagram0"))
-			.andExpect(jsonPath("$.viewCount").value(1));
-	}
+    @DisplayName("findFeed: 게시물 상세 조회에 성공한다.")
+    @Test
+    public void findFeed() throws Exception {
+        // given
+        final String url = "/feed/{id}";
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(get(url, 1)
+                .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+        );
+
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(jsonPath("$.contentId").value("instagram0"))
+                .andExpect(jsonPath("$.viewCount").value(1));
+    }
 }
