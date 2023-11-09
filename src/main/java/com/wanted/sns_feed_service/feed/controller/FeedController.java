@@ -4,11 +4,14 @@ package com.wanted.sns_feed_service.feed.controller;
 import com.wanted.sns_feed_service.feed.FeedService;
 import com.wanted.sns_feed_service.feed.entity.Feed;
 import com.wanted.sns_feed_service.feed.entity.Type;
+import com.wanted.sns_feed_service.resolver.LoginMember;
+import com.wanted.sns_feed_service.resolver.LoginUser;
 import com.wanted.sns_feed_service.response.CommonResponse;
 import com.wanted.sns_feed_service.response.FeedDetailResponse;
 import com.wanted.sns_feed_service.response.ResResult;
 import com.wanted.sns_feed_service.response.ResponseCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -97,16 +100,18 @@ public class FeedController {
     /**
      * 통계
      */
-
     @GetMapping("/statistics")
     @Operation(summary = "통계 자료 조회", description = "통계 자료를 조회합니다.")
     public ResponseEntity<CommonResponse> getFeedByHashtag(
-            @RequestParam(value = "hashtag", required = false, defaultValue = "기본값") String hashtag,
+            @RequestParam(value = "hashtag", required = false, defaultValue = "") String hashtag,
+            @Parameter(hidden = true) @LoginUser LoginMember loginMember,
             @RequestParam(value = "type") String type,
             @RequestParam(value = "start", required = false) LocalDate start,
             @RequestParam(value = "end", required = false) LocalDate end,
             @RequestParam(value = "value", required = false, defaultValue = "count") String value
     ) {
+        if (hashtag.equals(""))
+            hashtag = loginMember.getAccount();
         return ResponseEntity.ok(feedService.getFeeds(hashtag, type, start, end, value));
     }
 }
