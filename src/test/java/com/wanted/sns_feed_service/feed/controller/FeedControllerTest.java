@@ -100,13 +100,14 @@ class FeedControllerTest {
                 .andDo(print());
     }
 
-    @DisplayName("해시 테그 검색 테스트2 - 태그를 넣지 않으면 로그인 한 사용자가 태그된 피드가 조회")
+    @DisplayName("해시 테그 검색 테스트2 - 태그를 넣지 않으면 기본값이 자동으로 넘어감. 이후 로그인 한 사용자가 태그된 피드가 조회")
     @Test
     void 해시_테그_검색2() throws Exception {
 
         //when, then
         mockMvc.perform(get("/feed")
                         .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "") // 컨트롤러에서 설정한 hashtag 의 defaultValue
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.content.size()").value(1))
@@ -136,6 +137,7 @@ class FeedControllerTest {
         //when, then
         mockMvc.perform(get("/feed")
                         .header("Authorization", "Bearer " + user1Token) // 헤더에 Authorization 값을 추가
+                        .param("hashtag", "")
                         .param("order_by", "DESC") // 가장 최근에 생성한 피드가 가장 위에 오게 됨.
                         .param("order_type", "created_at")
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
