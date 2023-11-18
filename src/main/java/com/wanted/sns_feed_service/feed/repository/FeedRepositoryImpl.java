@@ -112,9 +112,6 @@ public class FeedRepositoryImpl extends Querydsl4RepositorySupport implements Fe
      * hashtag 조회
      */
     private BooleanExpression hashtagFilter(String hashtag) {
-        if (hashtag == null || hashtag.isEmpty()) {
-            return feed.hashTags.any().isNotNull(); // TODO : null 이면 자신의 계정 반환하게 하기, 현재는 모든 목록 불러오게 함.
-        }
         return feed.hashTags.any().name.eq(hashtag);
     }
 
