@@ -28,10 +28,10 @@ public class FeedService {
     /**
      * 검색 필터링
      */
-    public Page<FeedResponseDto> search(String hashtag, String account, Type type, String searchBy, String orderBy, String orderTarget, String searchKeyword, Pageable pageable) {
+    public Page<FeedResponseDto> search(String hashtag, Type type, String searchBy, String orderBy, String orderTarget, String searchKeyword, Pageable pageable) {
         // TODO hashtag      미 입력시 본인 계정
 
-        return feedRepository.filter(hashtag, account, type, searchBy, orderBy, orderTarget, searchKeyword, pageable);
+        return feedRepository.filter(hashtag, type, searchBy, orderBy, orderTarget, searchKeyword, pageable);
     }
 
     /**
@@ -70,7 +70,7 @@ public class FeedService {
         return feed;
     }
 
-    public CommonResponse getFeeds(String hashtag, String account, String type, LocalDate start, LocalDate end, String value) {
+    public CommonResponse getFeeds(String hashtag, String type, LocalDate start, LocalDate end, String value) {
         //TODO jwt, 로그인 적용 후 로그인 된 유저(토큰정보 추출)해서 입력값없을 떄 본인 hashtag 검색 되도록
         if (start == null) {
             start = LocalDate.parse(LocalDate.now().minusDays(7).format(DateTimeFormatter.ofPattern(type.equals("date") ? "yyyy-MM-dd" : "yyyy-MM-dd hh:00")));
@@ -86,7 +86,7 @@ public class FeedService {
 
         if (type.equals("hour") && diff > 86400 * 7)
             return new CommonResponse("통계 자료 조회 실패: 날짜/시간 별 조회는 7일 이하만 가능합니다.", HttpStatus.BAD_REQUEST.value());
-        return new CommonResponse("통계 자료 조회 성공", HttpStatus.OK.value(), feedRepository.getFeedStatistics(hashtag, account, type, start, end, value));
+        return new CommonResponse("통계 자료 조회 성공", HttpStatus.OK.value(), feedRepository.getFeedStatistics(hashtag, type, start, end, value));
 
     }
 }
