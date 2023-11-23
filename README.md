@@ -8,6 +8,7 @@
 - [개요](#개요)
 - [Skills](#skills)
 - [프로젝트 진행 및 이슈 관리](#프로젝트-진행-및-이슈-관리)
+- [API Swagger Docs](#api-swagger-docs)
 - [Flow Chart](#flow-chart)
 - [TIL(Today I Learn)](#til)
 - [회고](#회고)
@@ -33,6 +34,10 @@
 - 팀 Notion 페이지를 활용해 개발 하며 학습한 내용 공유
 
 = [Notion](https://www.notion.so/1-SNS-Feed-5016005a9778436288ccb520dfabfa31?pvs=21)
+
+## API Swagger Docs
+
+![image](https://github.com/Teemo-Wanted/SNS_Feed_Service/assets/126079049/1f2a3a6f-200c-4d2b-ba47-f24abfa81f96)
 
 ## Flow Chart
 
